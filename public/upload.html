@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Recipe Image</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <header>
+        <h1>Upload Recipe Image</h1>
+    </header>
+    <main>
+        <form id="upload-form" enctype="multipart/form-data">
+            <label for="recipe-id">Recipe ID:</label>
+            <input type="number" id="recipe-id" name="recipe-id" required>
+            <label for="image">Image:</label>
+            <input type="file" id="image" name="image" accept="image/*" required>
+            <button type="submit">Upload</button>
+        </form>
+    </main>
+    <script>
+        document.getElementById('upload-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const formData = new FormData();
+            const recipeId = document.getElementById('recipe-id').value;
+            const imageFile = document.getElementById('image').files[0];
+            
+            formData.append('image', imageFile);
+
+            fetch(`/recipes/upload/${recipeId}`, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert('Image uploaded successfully!');
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    </script>
+</body>
+</html>

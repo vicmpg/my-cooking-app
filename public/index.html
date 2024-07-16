@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cooking Recipes</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap">
+</head>
+<body>
+    <header>
+        <h1>Cooking Recipes</h1>
+    </header>
+    <main>
+        <div id="recipe-list"></div>
+        <div id="recipe-details" style="display: none;">
+            <button onclick="backToList()">Back to List</button>
+            <h2 id="recipe-name"></h2>
+            <img id="recipe-image" src="" alt="">
+            <h3>Ingredients</h3>
+            <ul id="recipe-ingredients"></ul>
+            <h3>Steps</h3>
+            <ol id="recipe-steps"></ol>
+        </div>
+    </main>
+    <script>
+        function showRecipeDetails(recipe) {
+            document.getElementById('recipe-list').style.display = 'none';
+            document.getElementById('recipe-details').style.display = 'block';
+
+            document.getElementById('recipe-name').innerText = recipe.name;
+            document.getElementById('recipe-image').src = recipe.image || '';
+            document.getElementById('recipe-image').style.display = recipe.image ? 'block' : 'none';
+
+            const ingredientsList = document.getElementById('recipe-ingredients');
+            ingredientsList.innerHTML = '';
+            recipe.ingredients.forEach(ingredient => {
+                const li = document.createElement('li');
+                li.innerText = ingredient;
+                ingredientsList.appendChild(li);
+            });
+
+            const stepsList = document.getElementById('recipe-steps');
+            stepsList.innerHTML = '';
+            recipe.steps.forEach(step => {
+                const li = document.createElement('li');
+                li.innerText = step;
+                stepsList.appendChild(li);
+            });
+        }
+
+        function backToList() {
+            document.getElementById('recipe-list').style.display = 'flex';
+            document.getElementById('recipe-details').style.display = 'none';
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            fetch('/recipes')
+                .then(response => response.json())
+                .then(data => {
+                    const recipeList = document.getElementById('recipe-list');
+                    data.forEach(recipe => {
+                        const recipeCard = document.createElement('div');
+                        recipeCard.className = 'recipe-card';
+                        recipeCard.innerHTML = `
+                            <h2>${recipe.name}</h2>
+                            <p>${recipe.description}</p>
+                            ${recipe.image ? `<img src="${recipe.image}" alt="${recipe.name}">` : ''}
+                        `;
+                        recipeCard.onclick = () => showRecipeDetails(recipe);
+                        recipeList.appendChild(recipeCard);
+                    });
+                });
+        });
+    </script>
+</body>
+</html>
